@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="reliclogs-suite.xml" />
+	<munit:test name="reliclogsFlow-test" doc:id="f4090894-c2fd-4b45-8fe0-5d8ee0a92b12" >
+		<munit:behavior >
+			<munit:set-event doc:name="Set Input" doc:id="94ea202f-653b-455c-82f9-d09ac4a0ac95" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://reliclogsFlowtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://reliclogsFlowtest\set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to reliclogsFlow" doc:id="e99ac8e6-65c2-4889-8dd1-66fae1a1c764" name="reliclogsFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="10e4db60-4353-470d-8a99-e7f32d9d6044" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import reliclogsFlowtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify Logger" doc:id="c7f0a4b6-3aad-453a-844c-2b21721c7be1" processor="logger" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="0b0386a4-e607-4077-a968-471df3c2a9a8" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
